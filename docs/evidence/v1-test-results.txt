@@ -1,0 +1,315 @@
+
+> app@1.0.0 test
+> jest --runInBand
+
+FAIL tests/f09-rate-limit.test.js (11.816 s)
+  ● F-09 Login rate limiting › blocks after repeated failed login attempts
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 429
+    Received: 401
+
+      13 |       if (i < 9) expect(res.status).toBe(401);
+      14 |     }
+    > 15 |     expect(lastStatus).toBe(429);
+         |                        ^
+      16 |   }, 20000);
+      17 |
+      18 |   // Reset the in-memory limiter so later test files aren't blocked by this one.
+
+      at Object.toBe (tests/f09-rate-limit.test.js:15:24)
+
+FAIL tests/f06-negative-amount.test.js
+  ● F-06 Negative-amount transfer › negative amount is rejected
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 400
+    Received: 200
+
+      14 |       .set('Authorization', `Bearer ${token}`)
+      15 |       .send({ to: '0911000002', amount: -50, pin: '1234' });
+    > 16 |     expect(res.status).toBe(400);
+         |                        ^
+      17 |   });
+      18 |
+      19 |   test('balances are unaffected after a rejected negative transfer', async () => {
+
+      at Object.toBe (tests/f06-negative-amount.test.js:16:24)
+
+  ● F-06 Negative-amount transfer › balances are unaffected after a rejected negative transfer
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 1000
+    Received: 1050
+
+      23 |       .send({ to: '0911000002', amount: -50, pin: '1234' });
+      24 |     const me = await request(BASE_URL).get('/api/users/me').set('Authorization', `Bearer ${token}`);
+    > 25 |     expect(me.body.balance).toBe(1000);
+         |                             ^
+      26 |   });
+      27 | });
+      28 |
+
+      at Object.toBe (tests/f06-negative-amount.test.js:25:29)
+
+FAIL tests/f04-mass-assignment.test.js
+  ● F-04 Mass assignment - privilege escalation › cannot set own role or balance via PATCH /users/me
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 400
+    Received: 200
+
+      14 |       .set('Authorization', `Bearer ${token}`)
+      15 |       .send({ role: 'admin', balance: 999999 });
+    > 16 |     expect(res.status).toBe(400);
+         |                        ^
+      17 |   });
+      18 |
+      19 |   test('role and balance remain unchanged after an escalation attempt', async () => {
+
+      at Object.toBe (tests/f04-mass-assignment.test.js:16:24)
+
+  ● F-04 Mass assignment - privilege escalation › role and balance remain unchanged after an escalation attempt
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: "user"
+    Received: "admin"
+
+      23 |       .send({ role: 'admin', balance: 999999 });
+      24 |     const me = await request(BASE_URL).get('/api/users/me').set('Authorization', `Bearer ${token}`);
+    > 25 |     expect(me.body.role).toBe('user');
+         |                          ^
+      26 |     expect(me.body.balance).toBe(1000);
+      27 |   });
+      28 | });
+
+      at Object.toBe (tests/f04-mass-assignment.test.js:25:26)
+
+FAIL tests/f11-race-condition.test.js
+  ● F-11 Race condition / double-spend prevention › only one of 20 concurrent transfers succeeds
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 1
+    Received: 10
+
+      16 |     );
+      17 |     const successes = results.filter((r) => r.status === 200).length;
+    > 18 |     expect(successes).toBe(1);
+         |                       ^
+      19 |
+      20 |     const me = await request(BASE_URL).get('/api/users/me').set('Authorization', `Bearer ${token}`);
+      21 |     expect(me.body.balance).toBe(400);
+
+      at Object.toBe (tests/f11-race-condition.test.js:18:23)
+
+FAIL tests/f10-jwt-secret.test.js
+  ● F-10 JWT signing secret strength › token carries an expiry claim
+
+    expect(received).toBeDefined()
+
+    Received: undefined
+
+      19 |   test('token carries an expiry claim', () => {
+      20 |     const decoded = jwt.decode(token);
+    > 21 |     expect(decoded.exp).toBeDefined();
+         |                         ^
+      22 |   });
+      23 | });
+      24 |
+
+      at Object.toBeDefined (tests/f10-jwt-secret.test.js:21:25)
+
+FAIL tests/f01-bola.test.js
+  ● F-01 BOLA - wallet ownership › Alice cannot read Bob's wallet balance
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 403
+    Received: 200
+
+      14 |   test("Alice cannot read Bob's wallet balance", async () => {
+      15 |     const res = await request(BASE_URL).get(`/api/wallets/${bobId}`).set('Authorization', `Bearer ${aliceToken}`);
+    > 16 |     expect(res.status).toBe(403);
+         |                        ^
+      17 |   });
+      18 |
+      19 |   test("Alice cannot read Bob's transaction history", async () => {
+
+      at Object.toBe (tests/f01-bola.test.js:16:24)
+
+  ● F-01 BOLA - wallet ownership › Alice cannot read Bob's transaction history
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 403
+    Received: 200
+
+      19 |   test("Alice cannot read Bob's transaction history", async () => {
+      20 |     const res = await request(BASE_URL).get(`/api/wallets/${bobId}/transactions`).set('Authorization', `Bearer ${aliceToken}`);
+    > 21 |     expect(res.status).toBe(403);
+         |                        ^
+      22 |   });
+      23 | });
+      24 |
+
+      at Object.toBe (tests/f01-bola.test.js:21:24)
+
+FAIL tests/f02-injection.test.js
+  ● F-02 NoSQL injection & excessive data exposure › regex operator in phone query is rejected, not executed
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 400
+    Received: 200
+
+      14 |       .query({ 'phone[$regex]': '.*' })
+      15 |       .set('Authorization', `Bearer ${token}`);
+    > 16 |     expect(res.status).toBe(400);
+         |                        ^
+      17 |   });
+      18 |
+      19 |   test('user profile never exposes passwordHash or pin fields', async () => {
+
+      at Object.toBe (tests/f02-injection.test.js:16:24)
+
+  ● F-02 NoSQL injection & excessive data exposure › user profile never exposes passwordHash or pin fields
+
+    expect(received).toBeUndefined()
+
+    Received: "5860d889cd35a56e0ef326ce3aa07e58:5b8644358871e99793e063465c472c385ff10d483fff2cc0e3b40894ab39c03f"
+
+      19 |   test('user profile never exposes passwordHash or pin fields', async () => {
+      20 |     const res = await request(BASE_URL).get('/api/users/me').set('Authorization', `Bearer ${token}`);
+    > 21 |     expect(res.body.passwordHash).toBeUndefined();
+         |                                   ^
+      22 |     expect(res.body.pinHash).toBeUndefined();
+      23 |     expect(res.body.pin).toBeUndefined();
+      24 |   });
+
+      at Object.toBeUndefined (tests/f02-injection.test.js:21:35)
+
+FAIL tests/f03-bfla.test.js
+  ● F-03 BFLA - admin endpoints › non-admin cannot list all users
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 403
+    Received: 200
+
+      11 |   test('non-admin cannot list all users', async () => {
+      12 |     const res = await request(BASE_URL).get('/api/admin/users').set('Authorization', `Bearer ${aliceToken}`);
+    > 13 |     expect(res.status).toBe(403);
+         |                        ^
+      14 |   });
+      15 |
+      16 |   test('non-admin cannot adjust balances', async () => {
+
+      at Object.toBe (tests/f03-bfla.test.js:13:24)
+
+  ● F-03 BFLA - admin endpoints › non-admin cannot adjust balances
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 403
+    Received: 200
+
+      19 |       .set('Authorization', `Bearer ${aliceToken}`)
+      20 |       .send({ userId: '000000000000000000000001', amount: 1000 });
+    > 21 |     expect(res.status).toBe(403);
+         |                        ^
+      22 |   });
+      23 | });
+      24 |
+
+      at Object.toBe (tests/f03-bfla.test.js:21:24)
+
+FAIL tests/f07-ssrf.test.js
+  ● F-07 SSRF protection on webhook test endpoint › internal non-https URL is rejected
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 400
+    Received: 200
+
+      14 |       .set('Authorization', `Bearer ${token}`)
+      15 |       .send({ url: 'http://mongo:27017' });
+    > 16 |     expect(res.status).toBe(400);
+         |                        ^
+      17 |   });
+      18 |
+      19 |   test('private IP range URL is rejected even over https', async () => {
+
+      at Object.toBe (tests/f07-ssrf.test.js:16:24)
+
+  ● F-07 SSRF protection on webhook test endpoint › private IP range URL is rejected even over https
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 400
+    Received: 500
+
+      22 |       .set('Authorization', `Bearer ${token}`)
+      23 |       .send({ url: 'https://127.0.0.1/secret' });
+    > 24 |     expect(res.status).toBe(400);
+         |                        ^
+      25 |   });
+      26 | });
+      27 |
+
+      at Object.toBe (tests/f07-ssrf.test.js:24:24)
+
+FAIL tests/f05-legacy-route.test.js
+  ● F-05 Forgotten legacy transfer route › /api/v0/transfer no longer exists
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 404
+    Received: 200
+
+      14 |       .set('Authorization', `Bearer ${token}`)
+      15 |       .send({ to: '0911000002', amount: 5 });
+    > 16 |     expect(res.status).toBe(404);
+         |                        ^
+      17 |   });
+      18 | });
+      19 |
+
+      at Object.toBe (tests/f05-legacy-route.test.js:16:24)
+
+FAIL tests/f08-error-handling.test.js
+  ● F-08 No internal details leaked on error › a malformed ID never returns a stack trace or internal paths
+
+    expect(received).toBeUndefined()
+
+    Received: "CastError: Cast to ObjectId failed for value \"not-a-valid-id\" (type string) at path \"_id\" for model \"User\"
+
+      11 |   test('a malformed ID never returns a stack trace or internal paths', async () => {
+      12 |     const res = await request(BASE_URL).get('/api/wallets/not-a-valid-id').set('Authorization', `Bearer ${token}`);
+    > 13 |     expect(res.body.stack).toBeUndefined();
+         |                            ^
+      14 |     expect(JSON.stringify(res.body)).not.toMatch(/node_modules|mongoose\/lib/);
+      15 |   });
+      16 | });
+
+      at SchemaObjectId.cast (../../../../usr/src/app/node_modules/mongoose/lib/schema/objectId.js:252:11)
+      at SchemaType.applySetters (../../../../usr/src/app/node_modules/mongoose/lib/schemaType.js:1405:12)
+      at SchemaType.castForQuery (../../../../usr/src/app/node_modules/mongoose/lib/schemaType.js:1825:17)
+      at cast (../../../../usr/src/app/node_modules/mongoose/lib/cast.js:378:32)
+      at Query.cast (../../../../usr/src/app/node_modules/mongoose/lib/query.js:5215:12)
+      at Query._castConditions (../../../../usr/src/app/node_modules/mongoose/lib/query.js:2385:10)
+      at model.Query._findOne (../../../../usr/src/app/node_modules/mongoose/lib/query.js:2761:8)
+      at maybeTracedQueryExec (../../../../usr/src/app/node_modules/mongoose/lib/query.js:4784:83)
+      at async /usr/src/app/src/server.js:84:12"
+      at Object.toBeUndefined (tests/f08-error-handling.test.js:13:28)
+
+Test Suites: 11 failed, 11 total
+Tests:       17 failed, 1 passed, 18 total
+Snapshots:   0 total
+Time:        18.555 s, estimated 20 s
+Ran all test suites.

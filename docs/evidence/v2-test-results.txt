@@ -1,0 +1,21 @@
+
+> app@1.0.0 test
+> jest --runInBand
+
+PASS tests/f09-rate-limit.test.js (11.814 s)
+PASS tests/f04-mass-assignment.test.js
+PASS tests/f06-negative-amount.test.js
+PASS tests/f11-race-condition.test.js
+PASS tests/f07-ssrf.test.js
+PASS tests/f10-jwt-secret.test.js
+PASS tests/f01-bola.test.js
+PASS tests/f05-legacy-route.test.js
+PASS tests/f02-injection.test.js
+PASS tests/f03-bfla.test.js
+PASS tests/f08-error-handling.test.js
+
+Test Suites: 11 passed, 11 total
+Tests:       18 passed, 18 total
+Snapshots:   0 total
+Time:        19.631 s
+Ran all test suites.
