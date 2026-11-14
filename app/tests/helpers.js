@@ -3,13 +3,23 @@ const { execSync } = require('child_process');
 const request = require('supertest');
 
 const BASE_URL = process.env.BASE_URL || 'http://127.0.0.1:3000';
-const ROOT_DIR = path.join(__dirname, '..', '..'); // project root, where docker-compose.yml lives
+const ROOT_DIR = path.join(__dirname, '..', '..');
+const IS_CI = process.env.CI === 'true';
 
 function reseed() {
-  execSync('docker compose exec -T api node src/seed.js', { cwd: ROOT_DIR, stdio: 'ignore' });
+  if (IS_CI) {
+    execSync('node src/seed.js', { cwd: path.join(__dirname, '..'), stdio: 'ignore' });
+  } else {
+    execSync('docker compose exec -T api node src/seed.js', { cwd: ROOT_DIR, stdio: 'ignore' });
+  }
 }
 
 function restartApi() {
+  if (IS_CI) {
+    // In CI the server runs as a background process, not a container; nothing to restart.
+    // The rate-limit test's afterAll becomes a no-op here.
+    return;
+  }
   execSync('docker compose restart api', { cwd: ROOT_DIR, stdio: 'ignore' });
 }
 
