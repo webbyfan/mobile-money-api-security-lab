@@ -16,7 +16,7 @@
 
 ## Executive Summary
 
-Eleven distinct vulnerabilities were identified across authentication, authorization, business logic, and configuration controls. Three findings are rated **Critical**, three **High**, and five **Medium**. A chained exploit scenario demonstrates that two of these findings combine to allow complete authentication bypass and full account takeover without valid credentials.
+Eleven distinct vulnerabilities were identified across authentication, authorization, business logic, and configuration controls. one finding is rated **Critical**, three **High**, and seven **Medium**. A chained exploit scenario demonstrates that two of these findings combine to allow complete authentication bypass and full account takeover without valid credentials.
 
 | ID | Finding | OWASP API Category | CVSS v3.1 | Severity |
 |---|---|---|---|---|
