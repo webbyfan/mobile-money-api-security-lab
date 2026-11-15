@@ -8,7 +8,11 @@ const IS_CI = process.env.CI === 'true';
 
 function reseed() {
   if (IS_CI) {
-    execSync('node src/seed.js', { cwd: path.join(__dirname, '..'), stdio: 'ignore' });
+    execSync('node src/seed.js', {
+      cwd: path.join(__dirname, '..'),
+      stdio: 'ignore',
+      env: { ...process.env },      // fix: forward MONGO_URI and friends to the child process
+    });
   } else {
     execSync('docker compose exec -T api node src/seed.js', { cwd: ROOT_DIR, stdio: 'ignore' });
   }
@@ -16,8 +20,6 @@ function reseed() {
 
 function restartApi() {
   if (IS_CI) {
-    // In CI the server runs as a background process, not a container; nothing to restart.
-    // The rate-limit test's afterAll becomes a no-op here.
     return;
   }
   execSync('docker compose restart api', { cwd: ROOT_DIR, stdio: 'ignore' });
